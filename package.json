@@ -1,0 +1,59 @@
+{
+  "name": "create-react-app-antd",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@ant-design/compatible": "^5.1.1",
+    "@ant-design/icons": "^4.7.0",
+    "antd": "^5.5.2",
+    "axios": "^0.27.2",
+    "dayjs": "^1.10.7",
+    "gulp": "^4.0.2",
+    "gulp-csso": "^4.0.1",
+    "gulp-debug": "^4.0.0",
+    "gulp-less": "^5.0.0",
+    "gulp-postcss": "^9.0.1",
+    "numeral": "^2.0.6",
+    "query-string": "^7.1.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "5.2.0",
+    "react-scripts": "^5.0.1",
+    "react-use": "^17.3.1",
+    "styled-components": "^5.3.10"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "lint": "eslint src"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "babel-eslint": "^10.1.0",
+    "customize-cra": "^1.0.0",
+    "eslint": "^8.39.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "postcss": "^8.4.23",
+    "react-app-rewired": "^2.2.1",
+    "tailwindcss": "^3.3.2"
+  },
+  "resolutions": {
+    "styled-components": "^5"
+  }
+}
