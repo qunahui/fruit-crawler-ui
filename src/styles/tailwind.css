@@ -1,10 +1,67 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap");
 body {
   padding: 0;
+  box-sizing: border-box;
   margin: 0;
+}
+p {
+  padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+}
+.text-container-1 {
+  background-color: #029147;
+  align-items: center;
+  margin: auto;
+  padding: 0;
+  background: none;
+  border: none;
+  flex-shrink: 0;
+  text-decoration: none;
+  min-width: 0;
+}
+.text-container-2 {
+  background-color: #029147;
+  font-size: 50px;
+}
+.first {
+  color: #ffff;
+  font-size: 50px;
+  font-weight: bold;
+}
+.second {
+  color: #ffff;
+  font-size: 50px;
+  font-weight: 300;
+}
+
+.chooseaproduct {
+  transform-origin: top left;
+  color: #000;
+  font-size: 24px;
+  font-weight: 500;
+  font-family: Roboto, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", "Liberation Sans", sans-serif;
+  position: absolute;
+  left: 916.9999px;
+  top: 620.0002px;
+  width: 428.7404px;
+  height: 27.9135px;
+  flex-direction: column;
+  transform: matrix(0, 1, -1, 0, 0, 0);
+}
+
+.robotoextralight200 {
+  font-family: "Montserrat", sans-serif;
+}
+
+.resultsoutline {
+  width: 6%;
+  height: 7%;
+  border: 1px solid red;
 }
 
 * {
