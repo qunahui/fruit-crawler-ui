@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/compatible": "^5.1.1",
-    "@ant-design/icons": "^4.7.0",
+    "@ant-design/icons": "^4.8.0",
     "antd": "^5.5.2",
     "axios": "^0.27.2",
     "dayjs": "^1.10.7",
@@ -17,6 +17,7 @@
     "query-string": "^7.1.1",
     "react": "^16.14.0",
     "react-dom": "^16.13.1",
+    "react-modal": "^3.16.1",
     "react-router-dom": "5.2.0",
     "react-scripts": "^5.0.1",
     "react-use": "^17.3.1",

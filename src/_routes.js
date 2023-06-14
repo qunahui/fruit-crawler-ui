@@ -4,6 +4,12 @@ const DashboardPage = lazy(() => import("./pages/dashboard"))
 const Page404 = lazy(() => import("./pages/notFound"))
 const routes = [
   {
+    path: "/auth",
+    component: DashboardPage,
+    exact: true,
+    isPublic: true,
+  },
+  {
     path: "/",
     component: DashboardPage,
     exact: true,

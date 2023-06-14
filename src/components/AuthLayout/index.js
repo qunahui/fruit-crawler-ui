@@ -1,9 +1,8 @@
 import React from "react"
 import { Route, Switch, Redirect } from "react-router-dom"
 import { Layout } from "antd"
-
 import { routes } from "~/_routes"
-
+import { Button, Input, Space } from 'antd'
 const { Content } = Layout
 
 const RenderComponent = ({ component: Component, isPublic = false, ...rest }) => {
@@ -17,7 +16,7 @@ const RenderComponent = ({ component: Component, isPublic = false, ...rest }) =>
   )
 }
 
-const DefaultLayout = () => {
+const AuthLayout = () => {
   const renderRoutes = () =>
     routes.map((route) => <RenderComponent key={route.key || route.path} {...route} />)
 
@@ -34,11 +33,18 @@ const DefaultLayout = () => {
           borderRadius: 12,
         }}
       >
-        <Switch>
+       <div className="bg-red-300">
+        Authenticated headers
+       <Switch>
           {renderRoutes()}
           <Redirect to="/404" />
         </Switch>
+       </div>
       </Content>
+      <Space.Compact style={{ width: '100%' }}>
+      <Input defaultValue="Combine input and button" />
+      <Button type="primary">Submit</Button>
+      </Space.Compact>
     </Layout>
   )
 }
@@ -47,4 +53,4 @@ const DefaultLayout = () => {
 
 // }
 
-export default DefaultLayout
+export default AuthLayout
