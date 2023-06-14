@@ -5,11 +5,11 @@ import { CloseOutlined, EditOutlined } from "@ant-design/icons"
 
 function FruitDisplays({ id, names, prices, onDelete, onEditButtonClick }) {
   return (
-    <div style={{ "margin-right": "4%" }}>
+    <div style={{ "margin-right": "2em" }}>
       <div
         style={{
-          "margin-right": "2%",
-          "margin-left": "2%",
+          "margin-right": ".5em",
+          "margin-left": ".5em",
         }}
       >
         <div style={{ "margin-bottom": "3em", "margin-top": "2em" }} />
@@ -25,10 +25,7 @@ function FruitDisplays({ id, names, prices, onDelete, onEditButtonClick }) {
                       "padding-left": ".5em",
                     }}
                   >
-                    <img
-                      src={require("./exampleimage.png")}
-                      style={{ "border-radius": "30px" }}
-                    ></img>
+                    <img src={require("./exampleimage.png")} style={{ "border-radius": "30px" }} />
                     <div style={{ display: "flex" }}>
                       <h1 style={{}}>
                         <b>{names}</b>
@@ -39,7 +36,7 @@ function FruitDisplays({ id, names, prices, onDelete, onEditButtonClick }) {
                         className="robotoextralight200"
                         style={{
                           "font-size": "30px",
-                          "margin-left": "10%",
+                          "margin-left": "1.2em",
                           "text-overflow": "ellipsis",
                           "white-space": "nowrap",
                           overflow: "hidden",
@@ -48,15 +45,6 @@ function FruitDisplays({ id, names, prices, onDelete, onEditButtonClick }) {
                         }}
                       >
                         {prices}
-                        {/* <p
-                          className="robotoextralight200"
-                          style={{
-                            "text-align": "center",
-                            "margin-top": ".25em",
-                            "text-overflow": "ellipsis",
-                          }}
-                        >
-                        </p> */}
                       </div>
                       <img
                         src={require("./shopee-mall 1.png")}
@@ -68,7 +56,7 @@ function FruitDisplays({ id, names, prices, onDelete, onEditButtonClick }) {
                       <Button
                         onClick={onEditButtonClick}
                         icon={<EditOutlined />}
-                        style={{ "margin-left": "10%" }}
+                        style={{ "margin-left": "1em" }}
                       />
                     </div>
                   </div>

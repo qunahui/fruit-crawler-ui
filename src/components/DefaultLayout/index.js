@@ -43,8 +43,4 @@ const DefaultLayout = () => {
   )
 }
 
-// const ResultBlock =  () => {
-
-// }
-
 export default DefaultLayout
