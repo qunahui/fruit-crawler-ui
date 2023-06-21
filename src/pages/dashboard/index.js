@@ -4,16 +4,6 @@ import FruitDisplays from "~/components/FruitDisplays"
 import SearchButton from "~/components/SearchButton"
 import axios from "axios"
 import { debounce } from "lodash"
-// import TextField from "@mui/material/TextField"
-// import Autocomplete from "@mui/material/Autocomplete"
-
-// For variables, function names: camelCase
-// example: edit task editor => editTaskEditor
-
-// For component names: PascalCase
-// example: DefaultLayout, Sidebar, Row, Column,....
-
-// For global constants: THEME, PRIMARY_COLOR_HEX,....
 
 const DEFAULT_PARAMS = {
   search: "",
@@ -27,25 +17,38 @@ const DEFALT_PAGINATION = {
 }
 
 const Dashboard = () => {
-  // const list = [
-  //   {
-  //     id: 1,
-  //     names: "hello",
-  //     prices: "hi",
-  //   },
-  //   {
-  //     id: 2,
-  //     names: "whee",
-  //     prices: "hiuwhdisadfsdafw",
-  //   },
-  // ]
+
 
   const [itemList, setitemList] = React.useState([])
   const [isFormOpen, setisFormOpen] = React.useState(false)
   const [pagination, setPagination] = React.useState(DEFALT_PAGINATION)
   const [params, setParams] = React.useState({ ...DEFAULT_PARAMS })
   const [form] = Form.useForm()
+  const [options, setOptions] = React.useState([])
+  const onSelect = (data) => {
+    console.log("onSelect", data)
+  }
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo)
+  }
 
+  function deleteTask(id) {
+    const remainingTasks = [...itemList].filter((task) => id !== task.id)
+    setitemList(remainingTasks)
+  }
+
+  function addTask() {
+    form.resetFields()
+    setisFormOpen(true)
+  }
+ 
+
+  function editTask(values) {
+    form.setFieldsValue({ ...values })
+    setisFormOpen(true)
+    
+  }
+ 
   async function postJSON(data) {
     try {
       const response = await fetch("http://localhost:8000/products", {
@@ -82,16 +85,7 @@ const Dashboard = () => {
     }
   }
 
-  // async function pagecount() {
-  //   console.log("opening")
-  //   const response = await fetch("http://localhost:8000/products/totalvaluescount/")
-  //   const result = await response.json()
-  //   const passingresult = (await result.total) * 10
-  //   setPagination(passingresult)
-  // }
-
-  // const pagesnumber = pagecount()
-
+ 
   async function getList() {
     try {
       const result = await axios.get("http://localhost:8000/products", {
@@ -105,130 +99,19 @@ const Dashboard = () => {
       console.log(e.message)
     }
 
-    // return fetch("http://localhost:8000/products")
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     const { data: list, meta } = data
-    //     setitemList(list)
-    //     setPagination(meta)
-    //   })
-    //   .catch((err) => {
-    //     console.log(err.message)
-    //     console.log("HELPME")
-    //   })
-  }
-
-  React.useEffect(() => {
-    getList()
-    // pagecount()
-  }, [params])
-
-  //const helper = Array(Array(posts.data)[0])
-
-  function checkSuccess() {
-    console.log("success")
-  }
-
   async function onFinish(values) {
     const { id, ...submitValues } = values
     if (id) {
-      // update the existed item
-      // transferList = [...itemList].map((item) => {
-      //   if (item.id === id) {
-      //     return {
-      //       ...submitValues,
-      //     }
-      //   }
-      //   return item
-      // })
+      
       await editJSON(id, submitValues)
     } else {
       await postJSON(submitValues)
-
-      // add new item
-      // transferList = [...itemList].concat([{ ...values }])
     }
-
     getList()
   }
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo)
-  }
-
-  function deleteTask(id) {
-    const remainingTasks = [...itemList].filter((task) => id !== task.id)
-    console.log("help, ", remainingTasks, id)
-    setitemList(remainingTasks)
-    // postJSON(itemList)
-  }
-
-  function addTask() {
-    form.resetFields()
-    setisFormOpen(true)
-  }
-  // async function sizeChangeUpdater(pageSize) {
-  //   console.log("Let's go")
-  //   try {
-  //     const response = await fetch("http://localhost:8000/products/sizeChangerUpdater", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ size: pageSize }),
-  //     })
-  //     const result = await response.json()
-  //     console.log("Success:", result)
-  //     console.log("logger", pageSize)
-  //     getList()
-  //     console.log("passingthrough")
-  //     return result
-  //   } catch (error) {
-  //     console.error("Whoops:", error)
-  //   }
-  // }
-
-  function editTask(values) {
-    form.setFieldsValue({ ...values })
-    setisFormOpen(true)
-    // postJSON(itemList)
-  }
-  // headers: {
-  //   "Content-Type": "application/json",
-  // },
-  // async function paginationChangeHandler(page, pageSize) {
-  //   console.log("Let's go")
-  //   try {
-  //     const response = await fetch("http://localhost:8000/products/pagination", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ numbers: page }),
-  //     })
-  //     const result = await response.json()
-  //     console.log("Success:", result)
-  //     console.log("logger", pageSize)
-  //     getList()
-  //     console.log("passingthrough")
-  //     return result
-  //   } catch (error) {
-  //     console.error("Whoops:", error)
-  //   }
-  // }
-  // const mockVal = (str, repeat = 1) => ({
-  //   value: str.repeat(repeat),
-  // })
-
-  // const mockVal = (str: string, repeat = 1) => ({
-  //   value: str.repeat(repeat),
-
-  // })
-  const [options, setOptions] = React.useState([])
-
   async function findAutoResults(text) {
     try {
-      console.log("Ground Control")
       const response = await fetch("http://localhost:8000/products/autocomplete", {
         method: "POST",
         headers: {
@@ -236,24 +119,21 @@ const Dashboard = () => {
         },
         body: JSON.stringify({ queries: text }),
       })
-      await console.log("onet")
       const jsonData = await response.json()
       return jsonData
     } catch (error) {
-      console.error("Whoops:", error)
+      console.error(error)
     }
   }
+  
+  React.useEffect(() => {
+    getList()
+   
+  }, [params])
 
-  const onSelect = (data) => {
-    console.log("onSelect", data)
-  }
-  // const getPanelValue = (value) => {
-  //   itemList.filter((thing) => String(thing.names).startsWith(value))
-  // }
 
-  // const getPanelValue = (searchText: string) =>
-  //   !searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]
 
+ 
   return (
     <div>
       <SearchButton />
@@ -291,7 +171,6 @@ const Dashboard = () => {
         &nbsp;
         <div style={{ "text-align": "center" }}>
           <Pagination
-            // onShowSizeChange={sizeChangeUpdater}
             current={params?.page}
             total={pagination?.totalDocs}
             onChange={(page, pageSize) => setParams({ ...params, page, pageSize })}
@@ -382,19 +261,3 @@ const Dashboard = () => {
 
 export default Dashboard
 
-/*
-  Step 1: Define a param objects: 
-  { page: 1, pageSize: 10 }
-  Step 2: Send this param objects to the backend
-  Step 3: Backend will use these information to slice correct chunk of array match the page and pageSize
-  Step 4: Backend send the result back
-
-  const [params, setParams] = useState({ page: 1, pageSize: 10 })
-
-  onChange: (page) => setParams({ ...params, page }) 
-  onSizeChange: (pageSize) => setParams({ ...params, pageSize }) 
-
-  useEffect(() => {
-    //fetch data from server
-  }, [parmas])
-*/
