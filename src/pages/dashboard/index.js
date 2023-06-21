@@ -1,68 +1,39 @@
 import React from "react"
-import { Button, Input, Modal, Form } from "antd"
+import { Button, Input, Modal, Form, Pagination, AutoComplete } from "antd"
 import FruitDisplays from "~/components/FruitDisplays"
 import SearchButton from "~/components/SearchButton"
+import axios from "axios"
+import { debounce } from "lodash"
 
-const list = [
-  {
-    id: 1,
-    names: "hello",
-    prices: "hi",
-  },
-  {
-    id: 2,
-    names: "whee",
-    prices: "hiuwhdisadfsdafw",
-  },
-]
+const DEFAULT_PARAMS = {
+  search: "",
+  page: 1,
+  pageSize: 10,
+}
 
-// For variables, function names: camelCase
-// example: edit task editor => editTaskEditor
-
-// For component names: PascalCase
-// example: DefaultLayout, Sidebar, Row, Column,....
-
-// For global constants: THEME, PRIMARY_COLOR_HEX,....
+const DEFALT_PAGINATION = {
+  totalPages: 1,
+  totalDocs: 1,
+}
 
 const Dashboard = () => {
-  const [itemList, setitemList] = React.useState(list)
+
+
+  const [itemList, setitemList] = React.useState([])
   const [isFormOpen, setisFormOpen] = React.useState(false)
+  const [pagination, setPagination] = React.useState(DEFALT_PAGINATION)
+  const [params, setParams] = React.useState({ ...DEFAULT_PARAMS })
   const [form] = Form.useForm()
-
-  function checkSuccess() {
-    console.log("success")
+  const [options, setOptions] = React.useState([])
+  const onSelect = (data) => {
+    console.log("onSelect", data)
   }
-
-  const onFinish = (values) => {
-    const { id, ...submitValues } = values
-    let transferList
-    if (id) {
-      // update the existed item
-      transferList = [...itemList].map((item) => {
-        if (item.id === id) {
-          return {
-            ...submitValues,
-          }
-        }
-
-        return item
-      })
-    } else {
-      // add new item
-      transferList = [...itemList].concat([{ ...values }])
-    }
-
-    setitemList(transferList)
-    setisFormOpen(false)
-  }
-
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo)
   }
 
   function deleteTask(id) {
     const remainingTasks = [...itemList].filter((task) => id !== task.id)
-    console.log("help, ", remainingTasks, id)
     setitemList(remainingTasks)
   }
 
@@ -70,12 +41,99 @@ const Dashboard = () => {
     form.resetFields()
     setisFormOpen(true)
   }
+ 
 
   function editTask(values) {
     form.setFieldsValue({ ...values })
     setisFormOpen(true)
+    
+  }
+ 
+  async function postJSON(data) {
+    try {
+      const response = await fetch("http://localhost:8000/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+
+      const result = await response.json()
+      console.log("Success:", result)
+      return result
+    } catch (error) {
+      console.error("Error:", error)
+    }
   }
 
+  async function editJSON(id, data) {
+    try {
+      const response = await fetch("http://localhost:8000/products/" + id + "?query=something", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+
+      const result = await response.json()
+      console.log("Success:", result)
+      return result
+    } catch (error) {
+      console.error("Error:", error)
+    }
+  }
+
+ 
+  async function getList() {
+    try {
+      const result = await axios.get("http://localhost:8000/products", {
+        params,
+      })
+
+      const { data: list, pagination } = result?.data || {}
+      setitemList(list)
+      setPagination(pagination)
+    } catch (e) {
+      console.log(e.message)
+    }
+
+  async function onFinish(values) {
+    const { id, ...submitValues } = values
+    if (id) {
+      
+      await editJSON(id, submitValues)
+    } else {
+      await postJSON(submitValues)
+    }
+    getList()
+  }
+
+  async function findAutoResults(text) {
+    try {
+      const response = await fetch("http://localhost:8000/products/autocomplete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ queries: text }),
+      })
+      const jsonData = await response.json()
+      return jsonData
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  
+  React.useEffect(() => {
+    getList()
+   
+  }, [params])
+
+
+
+ 
   return (
     <div>
       <SearchButton />
@@ -90,13 +148,34 @@ const Dashboard = () => {
           <div className="content-center">
             <div className="flex flex-row justify-center">
               <div className="w-[50%] flex">
-                <Input className="" placeholder="Cam sành" />
+                <AutoComplete
+                  options={options}
+                  style={{ width: 200 }}
+                  onSelect={onSelect}
+                  onSearch={debounce(
+                    (text) =>
+                      findAutoResults(text).then((data) => {
+                        setOptions(data?.data?.map((item) => ({ value: item.names })))
+                      }),
+                    300,
+                  )}
+                  placeholder="input here"
+                />
                 <Button type="primary" onClick={checkSuccess}>
                   Search
                 </Button>
               </div>
             </div>
           </div>
+        </div>
+        &nbsp;
+        <div style={{ "text-align": "center" }}>
+          <Pagination
+            current={params?.page}
+            total={pagination?.totalDocs}
+            onChange={(page, pageSize) => setParams({ ...params, page, pageSize })}
+            showSizeChanger
+          />
         </div>
         &nbsp;
         <Button onClick={addTask} type="primary" block>
@@ -161,7 +240,7 @@ const Dashboard = () => {
           </Form>
         </Modal>
         <div style={{ display: "flex", "flex-wrap": "wrap", "justify-content": "center" }}>
-          {itemList.map((task) => (
+          {itemList?.map((task) => (
             <FruitDisplays
               onEditButtonClick={() => editTask(task)}
               onDelete={deleteTask}
@@ -170,6 +249,8 @@ const Dashboard = () => {
             />
           ))}
         </div>
+      </div>
+      <div>
         <div>
           <fetchPosts />
         </div>
@@ -179,3 +260,4 @@ const Dashboard = () => {
 }
 
 export default Dashboard
+
