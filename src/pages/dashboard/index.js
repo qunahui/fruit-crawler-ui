@@ -1,10 +1,11 @@
 import React from "react"
-import { Button, Input, Modal, Form, Pagination, AutoComplete } from "antd"
+import { Button, Input, Modal, Form, Pagination, AutoComplete, Spin } from "antd"
 import FruitDisplays from "~/components/FruitDisplays"
 import SearchButton from "~/components/SearchButton"
-import axios from "axios"
+import axiosInstance from "~/utils/axios"
 import { debounce } from "lodash"
-
+//import { request } from "express"
+axiosInstance.defaults.timeout = 8000000
 const DEFAULT_PARAMS = {
   search: "",
   page: 1,
@@ -16,18 +17,20 @@ const DEFALT_PAGINATION = {
   totalDocs: 1,
 }
 
-const Dashboard = () => {
-
-
+const Dashboard = ({ Token, setToken }) => {
   const [itemList, setitemList] = React.useState([])
   const [isFormOpen, setisFormOpen] = React.useState(false)
   const [pagination, setPagination] = React.useState(DEFALT_PAGINATION)
   const [params, setParams] = React.useState({ ...DEFAULT_PARAMS })
   const [form] = Form.useForm()
   const [options, setOptions] = React.useState([])
+  const [searchcontent, setSearchContent] = React.useState()
+  const [loading, setLoading] = React.useState(false)
+
   const onSelect = (data) => {
     console.log("onSelect", data)
   }
+
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo)
   }
@@ -37,106 +40,141 @@ const Dashboard = () => {
     setitemList(remainingTasks)
   }
 
+  async function removalValidation(list) {
+    try {
+      const validation = await axiosInstance.post("http://localhost:8000/products/jwtvalidation", {
+        headers: { "Content-Type": "application/json", Authentication: Token },
+      })
+      if (validation) {
+        deleteTask(list)
+      }
+    } catch (e) {
+      console.log(e)
+      setToken("")
+    }
+  }
+
   function addTask() {
     form.resetFields()
     setisFormOpen(true)
   }
- 
 
   function editTask(values) {
     form.setFieldsValue({ ...values })
     setisFormOpen(true)
-    
   }
- 
+
   async function postJSON(data) {
     try {
-      const response = await fetch("http://localhost:8000/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+      const theresponse = await axiosInstance.post("http://localhost:8000/products/", {
+        headers: { "Content-Type": "application/json", Authentication: Token },
+        queries: data,
       })
-
-      const result = await response.json()
-      console.log("Success:", result)
-      return result
-    } catch (error) {
-      console.error("Error:", error)
+      console.log(theresponse)
+      return theresponse
+    } catch (e) {
+      console.log(e)
+      setToken("")
     }
   }
 
   async function editJSON(id, data) {
     try {
-      const response = await fetch("http://localhost:8000/products/" + id + "?query=something", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      const theresponse = await axiosInstance.put(
+        "http://localhost:8000/products/" + id + "?query=something",
+        {
+          headers: { "Content-Type": "application/json", Authentication: Token },
+          queries: data,
         },
-        body: JSON.stringify(data),
-      })
-
-      const result = await response.json()
-      console.log("Success:", result)
-      return result
-    } catch (error) {
-      console.error("Error:", error)
+      )
+      console.log(theresponse)
+      setisFormOpen(false)
+      return theresponse
+    } catch (e) {
+      console.log(e)
+      setToken("")
     }
   }
 
- 
   async function getList() {
     try {
-      const result = await axios.get("http://localhost:8000/products", {
+      const result = await axiosInstance.get("http://localhost:8000/products", {
         params,
       })
-
       const { data: list, pagination } = result?.data || {}
+      console.log(
+        "The commonwealth of Venice in their armoury have this inscription: 'Happy is that city which in time of peace thinks of war.'",
+      )
+      console.log(result)
       setitemList(list)
       setPagination(pagination)
     } catch (e) {
       console.log(e.message)
     }
+  }
+
+  React.useEffect(() => {
+    getList()
+  }, [params])
 
   async function onFinish(values) {
     const { id, ...submitValues } = values
     if (id) {
-      
       await editJSON(id, submitValues)
     } else {
       await postJSON(submitValues)
+      setisFormOpen(false)
     }
     getList()
   }
 
   async function findAutoResults(text) {
     try {
-      const response = await fetch("http://localhost:8000/products/autocomplete", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ queries: text }),
+      const theresponse = await axiosInstance.post("http://localhost:8000/products/autocomplete", {
+        headers: { Authentication: Token },
+        queries: text,
       })
-      const jsonData = await response.json()
-      return jsonData
-    } catch (error) {
-      console.error(error)
+      console.log(theresponse.data.searchoptions[0].map((item) => ({ value: item.names })))
+      return theresponse.data.searchoptions[0]
+    } catch (e) {
+      console.log(e)
+      setToken("")
     }
   }
-  
-  React.useEffect(() => {
-    getList()
-   
-  }, [params])
+  async function testSearch(e) {
+    if (e.code == "Enter") {
+      setLoading(true)
+      try {
+        const theresponse = await axiosInstance.post("http://localhost:8000/products/listeditor", {
+          headers: { Authentication: Token },
+          queries: searchcontent,
+          timeout: 360000,
+        })
+        await console.log(theresponse)
+        await getList()
+        console.log("Ay me, how many perils doe enfold/The righteous man, to make him daily fall!")
+        return setLoading(false)
+      } catch (e) {
+        console.log(e)
+        setToken("")
+      }
+    }
+  }
+  function Spinner(statetest) {
+    if (statetest == false) {
+      return <></>
+    } else {
+      return (
+        <div style={{ "padding-left": "1em", "padding-top": ".19em" }}>
+          <Spin />
+        </div>
+      )
+    }
+  }
 
-
-
- 
   return (
     <div>
-      <SearchButton />
+      <SearchButton onSubmit={testSearch} />
       <div style={{ width: "100%" }}>
         <div
           className="text-[22px] mt-[10px] text-green-700 mb-[10px] "
@@ -150,20 +188,25 @@ const Dashboard = () => {
               <div className="w-[50%] flex">
                 <AutoComplete
                   options={options}
-                  style={{ width: 200 }}
+                  style={{ width: 500 }}
                   onSelect={onSelect}
+                  onSubmit={(text) => testSearch(text)}
                   onSearch={debounce(
                     (text) =>
                       findAutoResults(text).then((data) => {
-                        setOptions(data?.data?.map((item) => ({ value: item.names })))
+                        setOptions(data?.map((item) => ({ value: item.names })))
                       }),
                     300,
                   )}
+                  onKeyDown={(text) => testSearch(text)}
+                  onChange={(text) => setSearchContent(text)}
                   placeholder="input here"
                 />
-                <Button type="primary" onClick={checkSuccess}>
-                  Search
+                <Button type="primary" onClick={testSearch}>
+                  one
                 </Button>
+
+                {Spinner(loading)}
               </div>
             </div>
           </div>
@@ -243,7 +286,7 @@ const Dashboard = () => {
           {itemList?.map((task) => (
             <FruitDisplays
               onEditButtonClick={() => editTask(task)}
-              onDelete={deleteTask}
+              onDelete={removalValidation}
               key={task.id}
               {...task}
             />
@@ -260,4 +303,3 @@ const Dashboard = () => {
 }
 
 export default Dashboard
-

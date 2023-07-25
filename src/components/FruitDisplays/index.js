@@ -3,7 +3,16 @@ import "src/styles/tailwind.css"
 import { Segmented, Space, Button } from "antd"
 import { CloseOutlined, EditOutlined } from "@ant-design/icons"
 
-function FruitDisplays({ id, names, prices, onDelete, onEditButtonClick }) {
+function FruitDisplays({ id, names, prices, onDelete, onEditButtonClick, stores, links }) {
+  // async function writeStore(stores) {
+  //   await console.log(stores)
+  //   return "lazada"
+  // }
+  // function createImage(links) {
+  //   console.log("Naught so sweet as melancholy")
+  //   console.log(prices)
+  //   return JSON.stringify(links)
+  // }
   return (
     <div style={{ "margin-right": "2em" }}>
       <div
@@ -25,9 +34,21 @@ function FruitDisplays({ id, names, prices, onDelete, onEditButtonClick }) {
                       "padding-left": ".5em",
                     }}
                   >
-                    <img src={require("./exampleimage.png")} style={{ "border-radius": "30px" }} />
+                    <img
+                      title="Image of Object"
+                      src={links}
+                      style={{ "border-radius": "30px", height: "20em", width: "20em" }}
+                    />
                     <div style={{ display: "flex" }}>
-                      <h1 style={{}}>
+                      <h1
+                        style={{
+                          width: "10em",
+                          height: "1.2em",
+                          "word-break": "break-word",
+                          overflow: "hidden",
+                          "text-overflow": "ellipsis",
+                        }}
+                      >
                         <b>{names}</b>
                       </h1>
                     </div>
@@ -47,7 +68,7 @@ function FruitDisplays({ id, names, prices, onDelete, onEditButtonClick }) {
                         {prices}
                       </div>
                       <img
-                        src={require("./shopee-mall 1.png")}
+                        src={require("./" + Object.values({ stores })[0] + ".png")}
                         style={{ height: "4em", width: "4em" }}
                       />
                     </div>
